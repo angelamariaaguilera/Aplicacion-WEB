@@ -10,8 +10,14 @@ def get_connection() -> psycopg.Connection:
     """Abre una conexión con row_factory=dict_row para obtener diccionarios.
 
     Se usa como context manager: la conexión se cierra al salir del bloque.
+
+    prepare_threshold=None desactiva los prepared statements del servidor,
+    lo que permite usar también el Transaction pooler de Supabase (pgbouncer).
     """
-    return psycopg.connect(settings.database_url, row_factory=dict_row)
+    options = {"row_factory": dict_row, "prepare_threshold": None}
+    if settings.database_sslmode:
+        options["sslmode"] = settings.database_sslmode
+    return psycopg.connect(settings.database_url, **options)
 
 
 def test_connection() -> bool:

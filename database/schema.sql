@@ -12,7 +12,7 @@
 -- ------------------------------------------------------------
 -- 0. Función auxiliar: mantener updated_at siempre actualizado
 -- ------------------------------------------------------------
-DROP FUNCTION IF EXISTS set_updated_at();
+DROP FUNCTION IF EXISTS set_updated_at() CASCADE;
 
 CREATE OR REPLACE FUNCTION set_updated_at()
 RETURNS TRIGGER AS $$
@@ -216,3 +216,19 @@ CREATE TRIGGER trg_medical_records_updated_at
 
 CREATE INDEX idx_medical_records_pet_id ON medical_records (pet_id);
 CREATE INDEX idx_medical_records_date    ON medical_records (consultation_date DESC);
+
+
+-- ------------------------------------------------------------
+-- 8. Row Level Security
+-- ------------------------------------------------------------
+-- En Supabase el esquema public se expone por la API REST (anon key).
+-- Activar RLS sin políticas bloquea ese acceso; el backend se conecta
+-- como el dueño de las tablas y no se ve afectado. En un PostgreSQL
+-- local no tiene ningún efecto práctico.
+ALTER TABLE users           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE owners          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE veterinarians   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE services        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE pets            ENABLE ROW LEVEL SECURITY;
+ALTER TABLE appointments    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medical_records ENABLE ROW LEVEL SECURITY;

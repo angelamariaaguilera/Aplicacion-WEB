@@ -5,6 +5,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     database_url: str = "postgresql://postgres:postgres@localhost:5432/vetcare_db"
+    # Modo SSL de libpq (disable, prefer, require...). Supabase exige "require".
+    # Si no se define, se respeta lo que traiga DATABASE_URL.
+    database_sslmode: str | None = None
     secret_key: str = "cambia-esta-clave-por-una-larga-y-aleatoria"
     access_token_expire_minutes: int = 60
     algorithm: str = "HS256"

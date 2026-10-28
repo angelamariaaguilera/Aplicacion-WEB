@@ -109,6 +109,28 @@ página, Context API sólo para la autenticación, y dos hooks reutilizables
 
 ## 5. Crear la base de datos PostgreSQL
 
+### Opción recomendada — Supabase (sin instalar PostgreSQL)
+
+1. Crea un proyecto en [supabase.com](https://supabase.com) y guarda la
+   *Database Password*.
+2. En el panel: **Connect → Connection string → URI → Session pooler** y copia
+   la URI.
+3. Configura `backend/.env` (ver sección 8) con esa URI en `DATABASE_URL` y
+   `DATABASE_SSLMODE=require`.
+4. Con el venv activo (sección 9), crea las tablas y los datos demo:
+
+   ```bash
+   cd backend
+   python -m scripts.init_db --check   # prueba la conexión
+   python -m scripts.init_db           # schema.sql + seed.sql
+   ```
+
+   Esto reemplaza las secciones 6 y 7. Alternativa: pegar `schema.sql` y luego
+   `seed.sql` en el **SQL Editor** de Supabase.
+
+`schema.sql` activa Row Level Security en todas las tablas para que la API REST
+pública de Supabase (anon key) no pueda leerlas; el backend no se ve afectado.
+
 ### Opción A — con psql
 
 ```bash
@@ -168,7 +190,11 @@ cp .env.example .env
 Edita `backend/.env` con tus credenciales reales:
 
 ```env
-DATABASE_URL=postgresql://postgres:tu_clave@localhost:5432/vetcare_db
+# Supabase (Session pooler)
+DATABASE_URL=postgresql://postgres.TU_PROJECT_REF:TU_PASSWORD@aws-0-TU_REGION.pooler.supabase.com:5432/postgres
+DATABASE_SSLMODE=require
+# PostgreSQL local:
+# DATABASE_URL=postgresql://postgres:tu_clave@localhost:5432/vetcare_db
 SECRET_KEY=una-clave-larga-y-aleatoria-cambia-esto
 ACCESS_TOKEN_EXPIRE_MINUTES=60
 CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
@@ -361,7 +387,8 @@ proyecto_angela/
 
 | Variable | Obligatoria | Descripción |
 |---|---|---|
-| `DATABASE_URL` | Sí | Cadena de conexión a PostgreSQL |
+| `DATABASE_URL` | Sí | Cadena de conexión a PostgreSQL (local o Supabase) |
+| `DATABASE_SSLMODE` | No | Modo SSL de libpq; `require` para Supabase |
 | `SECRET_KEY` | Sí | Clave para firmar los JWT. **No la subas a Git.** |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | No | Vigencia del token (por defecto 60) |
 | `CORS_ORIGINS` | No | Orígenes permitidos, separados por coma |
@@ -372,6 +399,26 @@ proyecto_angela/
 | Variable | Obligatoria | Descripción |
 |---|---|---|
 | `VITE_API_URL` | Sí | URL base de la API |
+
+### Despliegue en Render + Supabase
+
+`render.yaml` define dos servicios: `vetcare-api` (FastAPI) y `vetcare-web`
+(sitio estático de React). Al arrancar, el backend ejecuta
+`python -m scripts.init_db --if-empty`, que crea las tablas y los datos demo en
+Supabase **solo la primera vez**; los despliegues siguientes no tocan los datos.
+
+1. En Render: **New → Blueprint** y elige este repositorio de GitHub.
+2. Completa las variables que pide el panel:
+   - `DATABASE_URL`: URI del **Session pooler** de Supabase (Render no
+     soporta IPv6, la conexión directa no funciona).
+   - `CORS_ORIGINS`: `https://vetcare-web.onrender.com`
+   - `VITE_API_URL`: `https://vetcare-api.onrender.com/api`
+3. Si Render asignó otras URLs (nombre ocupado), corrige `CORS_ORIGINS` y
+   `VITE_API_URL` en **Environment** y vuelve a desplegar. `VITE_API_URL` se
+   incrusta en el build, así que el frontend debe reconstruirse tras cambiarla.
+
+Cada `git push` a `main` vuelve a desplegar ambos servicios. El plan gratuito
+duerme el backend tras 15 min sin uso; la primera petición tarda ~1 min.
 
 ---
 
@@ -418,9 +465,19 @@ Ejecuta uvicorn desde dentro de `backend/`.
 El origen del frontend debe estar exactamente en `CORS_ORIGINS`, con el mismo
 protocolo y puerto.
 
+**Supabase: `could not translate host name` o timeout**
+Estás usando la conexión directa (`db.<ref>.supabase.co`), que solo funciona por
+IPv6. Usa la URI del **Session pooler**.
+
+**Supabase: `password authentication failed`**
+El usuario del pooler es `postgres.<PROJECT_REF>`. Si la clave tiene caracteres
+especiales, codifícalos en la URL (`@` → `%40`, `#` → `%23`).
+
 **Quiero reiniciar los datos desde cero**
 
 ```bash
+cd backend && python -m scripts.init_db
+# o con psql:
 psql -U postgres -d vetcare_db -f database/schema.sql
 psql -U postgres -d vetcare_db -f database/seed.sql
 ```

@@ -32,3 +32,5 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+# ---- Clon anidado del repo (no forma parte del proyecto) ----
+Aplicacion-WEB/
