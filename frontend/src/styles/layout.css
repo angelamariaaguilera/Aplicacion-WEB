@@ -1,0 +1,321 @@
+/* ============================================================
+   VetCare - Layout (sidebar, header, contenido)
+   ============================================================ */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: width var(--transition), transform var(--transition);
+  z-index: 40;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: var(--header-height);
+  padding: 0 var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.sidebar-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.sidebar-title {
+  font-size: var(--font-size-lg);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  color: var(--color-primary-dark);
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: var(--space-4) var(--space-3);
+  overflow-y: auto;
+}
+
+.nav-section {
+  padding: 0 var(--space-3);
+  margin-bottom: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0.55rem var(--space-3);
+  margin-bottom: 2px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.nav-item svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.nav-item:hover {
+  background-color: var(--color-primary-lighter);
+  color: var(--color-primary-dark);
+}
+
+.nav-item.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-weight: 600;
+}
+
+.nav-item.active svg {
+  opacity: 1;
+}
+
+/* ---------- Pie del sidebar ---------- */
+
+.sidebar-footer {
+  padding: var(--space-3);
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-alt);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  display: grid;
+  place-items: center;
+  font-size: var(--font-size-sm);
+  font-weight: 650;
+  flex-shrink: 0;
+}
+
+.sidebar-user-info {
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.sidebar-user-name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: 0.55rem var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-md);
+  font-weight: 500;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.logout-button:hover {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+/* ---------- Zona principal ---------- */
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--space-6);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.header-title {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+
+.header-date {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  text-transform: capitalize;
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--space-6);
+}
+
+/* ---------- Botón de menú (solo móvil) ---------- */
+
+.menu-toggle {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  place-items: center;
+}
+
+.menu-toggle:hover {
+  background-color: var(--color-background);
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: var(--sidebar-width-collapsed);
+  }
+
+  /* Colapsado: se oculta el texto, se mantiene el ícono. */
+  .sidebar-title,
+  .nav-section,
+  .nav-item span,
+  .sidebar-user-info,
+  .logout-button span {
+    display: none;
+  }
+
+  .sidebar-brand,
+  .nav-item,
+  .logout-button {
+    justify-content: center;
+  }
+
+  .sidebar-brand {
+    padding: 0;
+  }
+
+  .nav-item {
+    padding: 0.6rem;
+  }
+
+  .sidebar-user {
+    justify-content: center;
+    padding: var(--space-2) 0;
+  }
+
+  .app-header,
+  .app-content {
+    padding-left: var(--space-5);
+    padding-right: var(--space-5);
+  }
+}
+
+@media (max-width: 720px) {
+  /* Sidebar como drawer */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  /* Vuelve a mostrar los textos cuando el drawer está abierto */
+  .sidebar.open .sidebar-title,
+  .sidebar.open .nav-item span,
+  .sidebar.open .sidebar-user-info,
+  .sidebar.open .logout-button span {
+    display: block;
+  }
+
+  .sidebar.open .sidebar-brand,
+  .sidebar.open .nav-item,
+  .sidebar.open .logout-button {
+    justify-content: flex-start;
+  }
+
+  .sidebar.open .sidebar-brand {
+    padding: 0 var(--space-5);
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(31, 41, 55, 0.4);
+    z-index: 35;
+  }
+
+  .menu-toggle {
+    display: grid;
+  }
+
+  .app-header {
+    padding: 0 var(--space-4);
+  }
+
+  .app-content {
+    padding: var(--space-4);
+  }
+}
